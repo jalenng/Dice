@@ -1,14 +1,24 @@
-int DIE_SIZE = 100;
+int DIE_SIZE = 50;
+int dies = 9;
+PImage surface;
+
 void setup()
 {
 	size(500, 500);
 	noLoop();
+	surface = loadImage("surface.jpg");
 }
 void draw()
 {
 	background(0);
-	Die die1 = new Die(width / 2, height / 2, (int)(Math.random() * 5) + 1);
-	die1.show();
+	image(surface, 0, 0, width, height);
+	translate(250, 250);
+	rotate(PI / 4);
+	for (int i = 0; i < dies; i++)
+	{
+		Die die1 = new Die(0, 0, (int)(Math.random() * 6) + 1);
+		die1.show();
+	}
 }
 void mousePressed()
 {
@@ -33,26 +43,31 @@ class Die //models one single dice cube
 	}
 	void show()
 	{
-		rect(myX - halfDieSize, myY - halfDieSize, DIE_SIZE, DIE_SIZE, DIE_SIZE / 5);
+		fill(255);
+		rect(0 - halfDieSize, 0 - halfDieSize, DIE_SIZE, DIE_SIZE, DIE_SIZE / 5);
 		fill(0);
 		//middle: 1, 3, 5
-		if (myDots == 1 || myDots == 3 || myDots == 5) {
-			ellipse(myX, myY, dotSize, dotSize);
+		if (myDots == 1 || myDots == 3 || myDots == 5) 
+		{
+			ellipse(0, 0, dotSize, dotSize);
 		}
 		//top left and bottom right: 2, 3, 4, 5, 6
-		if (myDots) {
-			ellipse(myX, myY, dotSize, dotSize);
+		if (myDots >= 2) 
+		{
+			ellipse(-2 * dotIncrement, -2 * dotIncrement, dotSize, dotSize);
+			ellipse(2 * dotIncrement, 2 * dotIncrement, dotSize, dotSize);
 		}
 		//top right and bottom left: 4, 5, 6
-		if (myDots >= 3) {
-			ellipse(myX - 2 * dotIncrement, myY - 2 * dotIncrement, dotSize, dotSize);
-			ellipse(myX + 2 * dotIncrement, myY + 2 * dotIncrement, dotSize, dotSize);
+		if (myDots >= 4) 
+		{
+			ellipse(2 * dotIncrement, -2 * dotIncrement, dotSize, dotSize);
+			ellipse(-2 * dotIncrement, 2 * dotIncrement, dotSize, dotSize);
 		}
 		//middle left and right: 6
-		if (myDots == 3) {
-			ellipse(myX - 2 * dotIncrement, myY - 2 * dotIncrement, dotSize, dotSize);
-			ellipse(myX, myY, dotIncrement, dotIncrement);
-			ellipse(myX + 2 * dotIncrement, myY + 2 * dotIncrement, dotSize, dotSize);
+		if (myDots == 6) 
+		{
+			ellipse(-2 * dotIncrement, 0, dotSize, dotSize);
+			ellipse(2 * dotIncrement, 0, dotSize, dotSize);
 		}
 	}
 }
