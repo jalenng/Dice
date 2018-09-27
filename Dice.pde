@@ -1,50 +1,104 @@
 int DIE_SIZE = 50;
-int dies = 9;
+int numberOfDice = 10;
+int[] data = new int[5 * numberOfDice];
+int speed;
+int total;
 PImage surface;
 
 void setup()
 {
 	size(500, 500);
-	noLoop();
 	surface = loadImage("surface.jpg");
 }
 void draw()
 {
-	background(0);
 	image(surface, 0, 0, width, height);
-	translate(250, 250);
-	rotate(PI / 4);
-	for (int i = 0; i < dies; i++)
+	initiateDice();
+	animate();
+}
+void initiateDice() 
+{
+	for (int i = 0; i < numberOfDice; i++)
 	{
-		Die die1 = new Die(0, 0, (int)(Math.random() * 6) + 1);
+		resetMatrix();
+		int x = data[(5 * i)];
+		int y = data[(5 * i) + 1];
+		int dots = data[(5 * i) + 2];
+		int rotation = data[(5 * i) + 3];
+		int size = data[(5 * i) + 4];
+		Die die1 = new Die(x, y, dots, rotation, size);
 		die1.show();
+		resetMatrix();
+	}
+}
+void roll()
+{
+	total = 0;
+	speed = 30;
+	for(int i = 0; i < numberOfDice; i++)
+	{
+		data[(5 * i)] = (int)(Math.random() * 11) * ((width - DIE_SIZE) / 10) + (DIE_SIZE / 2); //x
+		data[(5 * i) + 1] = (int)(Math.random() * 11) * ((height - DIE_SIZE) / 10) + (DIE_SIZE / 2); //y
+		data[(5 * i) + 2] = (int)(Math.random() * 6) + 1; //dots
+		total += data[(5 * i) + 2]; //counts dots
+		data[(5 * i) + 3] = (int)(Math.random() * 360); //rotation
+		data[(5 * i) + 4] = DIE_SIZE * 10; //size
+	}
+}
+void animate()
+{
+	for(int i = 0; i < numberOfDice; i++)
+	{
+		data[(5 * i) + 3] += speed; //rotation
+		data[(5 * i) + 4] -= speed; //size
+	}
+	if (speed > 0)
+	{
+		speed -= 1;
+	}
+	else
+	{
+		fill(255, 255, 255, 220);
+		if (total != 0)
+		{
+			textSize(20);
+			text(numberOfDice + " dice", 5, height - 45);
+			text("total: " + total, 5, height - 25);
+			text("click to roll again", 5, height - 5);
+		}
+		else
+		{
+			textSize(32);
+			text("click to roll", width / 2 - 80, height / 2 + 16);	
+		}
 	}
 }
 void mousePressed()
 {
-	redraw();
+	roll();
 }
 class Die //models one single dice cube
 {
-	int myX, myY, myDots;
-	int halfDieSize = (int)(DIE_SIZE / 2);
-	int dotIncrement = (int)(DIE_SIZE / 7);
-	int dotSize = (int)(DIE_SIZE / 5);
+	int myX, myY, myDots, myRotation, mySize;
+	int halfDieSize, dotIncrement, dotSize;
 	
-	Die(int x, int y, int dots) //constructor
+	Die(int x, int y, int dots, int rotation, int size) //constructor
 	{
 		myX = x;
 		myY = y;
 		myDots = dots;
-	}
-	void roll()
-	{
-		//your code here
+		myRotation = rotation;
+		mySize = size;
+		halfDieSize = (int)(mySize / 2);
+		dotIncrement = (int)(mySize / 7);
+		dotSize = (int)(mySize / 5);
 	}
 	void show()
 	{
+		translate(myX, myY);
+		rotate(myRotation * 0.0174532925);
 		fill(255);
-		rect(0 - halfDieSize, 0 - halfDieSize, DIE_SIZE, DIE_SIZE, DIE_SIZE / 5);
+		rect(0 - halfDieSize, 0 - halfDieSize, mySize, mySize, mySize / 5);
 		fill(0);
 		//middle: 1, 3, 5
 		if (myDots == 1 || myDots == 3 || myDots == 5) 
